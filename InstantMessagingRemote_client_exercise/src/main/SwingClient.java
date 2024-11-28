@@ -6,7 +6,7 @@ import util.Topic;
 import subscriber.SubscriberImpl;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
+import java.util.List;
 import javax.swing.*;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +27,7 @@ public class SwingClient {
   public JTextArea messages_TextArea;
   public JTextArea info_TextArea;
   public JTextArea my_subscriptions_TextArea;
-  JComboBox<Topic> publisherComboBox;        // Dropdown to select active topic
+  JComboBox<String> publisherComboBox;        // Dropdown to select active topic
   JTextField argument_TextField;
 
   public SwingClient(TopicManager topicManager) {
@@ -46,7 +46,7 @@ public void createAndShowGUI() {
 
     topic_list_TextArea = new JTextArea(5, 10);
     my_subscriptions_TextArea = new JTextArea(5, 10);
-    publisherComboBox = new JComboBox<Topic>();
+    publisherComboBox = new JComboBox<String>();
     argument_TextField = new JTextField(20);
 
     // Separate TextAreas for Messages and Information
@@ -105,11 +105,11 @@ public void createAndShowGUI() {
     argumentP.add(new JLabel("Write content to set a new_publisher / new_subscriber / unsubscribe / post_event:"));
     argumentP.add(argument_TextField);
 
-    publisherComboBox = new JComboBox<Topic>();
+    publisherComboBox = new JComboBox<String>();
     publisherComboBox.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-            activePublisherTopic = (Topic) publisherComboBox.getSelectedItem();
+            activePublisherTopic = new Topic((String) publisherComboBox.getSelectedItem());
             if (activePublisherTopic != null) {
                 info_TextArea.append("Switched to publishing on topic: " + activePublisherTopic.name + "\n");
             }
@@ -157,14 +157,23 @@ public void createAndShowGUI() {
   class showTopicsHandler implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
-        System.out.print("Hola");
-        ArrayList<Topic> topicsList = (ArrayList) topicManager.topics();
+        // Obtén la lista de tópicos (sin el cast)
+        List<Topic> topicsList = topicManager.topics();  
+
+        // Ahora puedes trabajar con 'topicsList' como una lista
+        for (Topic topic : topicsList) {
+            System.out.println(topic);
+        }
+
+        // Limpiar el área de texto antes de agregar los nuevos datos
         topic_list_TextArea.setText("");
-        for(Topic topic : topicsList){
+        
+        // Añadir los nombres de los tópicos al área de texto
+        for (Topic topic : topicsList) {
             topic_list_TextArea.append(topic.name + "\n");
         }
     }
-  }
+}
 
   class newPublisherHandler implements ActionListener {
 
@@ -178,13 +187,7 @@ public void createAndShowGUI() {
 
         Topic selectedTopic = new Topic(topicName);
 
-        // Check if the topic already exists
-        if (!topicManager.topics().contains(selectedTopic)) {
-            info_TextArea.append("Topic '" + topicName + "' does not exist. Creating a new topic.\n");
-            topicManager.topics().add(selectedTopic); // Add the topic to the manager
-        } else {
-            info_TextArea.append("Topic '" + topicName + "' already exists. Assigning you as a publisher.\n");
-        }
+        
 
         // Create a publisher for the topic
         System.out.print("SI");
@@ -192,7 +195,7 @@ public void createAndShowGUI() {
         if (newPublisher != null) {
             my_publishers.put(selectedTopic, newPublisher);         
             
-            DefaultComboBoxModel<Topic> model = (DefaultComboBoxModel<Topic>) publisherComboBox.getModel();
+            DefaultComboBoxModel<String> model = (DefaultComboBoxModel<String>) publisherComboBox.getModel();
             boolean topicExists = false;
 
             // Iterate through the ComboBox items to check if the topic is already there
@@ -205,7 +208,7 @@ public void createAndShowGUI() {
 
             // Add the topic only if it doesn't already exist
             if (!topicExists) {
-                publisherComboBox.addItem(selectedTopic);
+                publisherComboBox.addItem(selectedTopic.name);
             }
             
             activePublisherTopic = selectedTopic;

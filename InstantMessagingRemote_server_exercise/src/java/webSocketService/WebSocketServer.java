@@ -29,7 +29,7 @@ public class WebSocketServer {
     System.out.println("onMessage - Subscription_request: " + json);
 
     Subscription_request s_req = new Gson().fromJson(json, Subscription_request.class);
-
+    
     if (s_req.type == Subscription_request.Type.ADD) {
       Publisher publisher = global.getTopicManager().publisher(s_req.topic);
       if (publisher != null) {
