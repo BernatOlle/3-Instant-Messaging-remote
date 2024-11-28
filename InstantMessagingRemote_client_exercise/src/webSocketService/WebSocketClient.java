@@ -43,9 +43,14 @@ public class WebSocketClient {
 
   public static synchronized void addSubscriber(Topic topic, Subscriber subscriber) {
     try {
-      
-      //...
-      
+      Subscription_request request = new Subscription_request(topic, Subscription_request.Type.ADD);
+      String jsonRequest = new Gson().toJson(request); // Convertir la solicitud en JSON
+
+      session.getBasicRemote().sendText(jsonRequest); // Enviar la solicitud WebSocket
+
+      // Agregar el suscriptor al mapa local
+      subscriberMap.put(topic, subscriber);
+      System.out.println("Subscriber added for topic: " + topic.name);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -53,9 +58,14 @@ public class WebSocketClient {
 
   public static synchronized void removeSubscriber(Topic topic) {
     try {
-      
-      //...
-      
+      Subscription_request request = new Subscription_request(topic, Subscription_request.Type.REMOVE);
+      String jsonRequest = new Gson().toJson(request); // Convertir la solicitud en JSON
+
+      session.getBasicRemote().sendText(jsonRequest); // Enviar la solicitud WebSocket
+
+      // Eliminar el suscriptor del mapa local
+      subscriberMap.remove(topic);
+      System.out.println("Subscriber removed from topic: " + topic.name);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -63,22 +73,37 @@ public class WebSocketClient {
 
   @OnMessage
   public void onMessage(String json) {
-
-    Gson gson = new Gson();
-    Subscription_close subs_close = gson.fromJson(json, Subscription_close.class);
-
-    //ordinary message from topic:
-    if (subs_close.cause==null) {
+    try {
+      // Intentamos deserializar el mensaje como un Subscription_close
+      Gson gson = new Gson();
+      Subscription_close subs_close = gson.fromJson(json, Subscription_close.class);
       
-      //...
-      
+      // Si existe una causa de cierre de suscripción
+      if (subs_close != null && subs_close.cause != null) {
+        // Procesamos el cierre de la suscripción (sin métodos adicionales)
+        if (subs_close.cause == Subscription_close.Cause.PUBLISHER) {
+          System.out.println("The publisher closed the subscription for topic: " + subs_close.topic.name);
+        } else if (subs_close.cause == Subscription_close.Cause.SUBSCRIBER) {
+          System.out.println("The subscriber closed the subscription for topic: " + subs_close.topic.name);
+        }
+        subscriberMap.remove(subs_close.topic); // Eliminamos el suscriptor del mapa
+      } else {
+        // Si no es un Subscription_close, procesamos un mensaje ordinario
+        Message message = gson.fromJson(json, Message.class);
+        if (message != null) {
+          // Enviamos el mensaje a los suscriptores correspondientes
+          Subscriber subscriber = subscriberMap.get(message.topic);
+          if (subscriber != null) {
+            subscriber.onMessage(message);
+          } else {
+            System.out.println("No subscriber found for topic: " + message.topic.name);
+          }
+        }
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
     }
-    //ending subscription message:
-    else {
-      
-      //...
-      
-    } 
   }
+
 
 }

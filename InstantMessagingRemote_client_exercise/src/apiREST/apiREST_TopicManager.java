@@ -26,9 +26,10 @@ public class apiREST_TopicManager {
       out.println(json);
       out.flush();
       ucon.connect();
-
+      
       BufferedReader in = new BufferedReader(new InputStreamReader(ucon.getInputStream()));
       String line;
+      
       while ((line = in.readLine()) != null) {
         System.out.println(line);
       }
@@ -93,6 +94,7 @@ public class apiREST_TopicManager {
   }
   public static List<Topic> topics() {
     try {
+        System.out.print("adeu1"); 
       URL url = new URL(Cons.SERVER_REST + "/topicmanager/topics");
       HttpURLConnection ucon = (HttpURLConnection) url.openConnection();
 
@@ -102,7 +104,7 @@ public class apiREST_TopicManager {
       
       System.out.println("topics()");
       ucon.connect();
-
+      System.out.print("adeu"); 
       BufferedReader in = new BufferedReader(new InputStreamReader(ucon.getInputStream()));
       Topic[] reply = new Gson().fromJson(in, Topic[].class);
       return Arrays.asList(reply);
