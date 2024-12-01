@@ -46,17 +46,23 @@ public class TopicManagerStub implements TopicManager {
 
   @Override
   public Subscription_check subscribe(Topic topic, Subscriber subscriber) {
-    // TODO: Calls WebSocket service to handle subscription
-    
-    // Implement subscription logic, like sending a subscription request to the server
-    // For simplicity, we're returning a "mocked" subscription check here.
-    return new Subscription_check(topic, Subscription_check.Result.OKAY);  // Mocked response
+    try {
+      WebSocketClient.addSubscriber(topic, subscriber);  // Add subscriber via WebSocket
+      return new Subscription_check(topic, Subscription_check.Result.OKAY);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return new Subscription_check(topic, Subscription_check.Result.NO_TOPIC);
+    }
   }
 
   @Override
   public Subscription_check unsubscribe(Topic topic, Subscriber subscriber) {
-    // TODO: Calls WebSocket service to handle unsubscription
-    // Similar to subscribe, we're returning a mocked response for unsubscription
-    return new Subscription_check(topic, Subscription_check.Result.OKAY);  // Mocked response
+    try {
+      WebSocketClient.removeSubscriber(topic);  // Remove subscriber via WebSocket
+      return new Subscription_check(topic, Subscription_check.Result.OKAY);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return new Subscription_check(topic, Subscription_check.Result.NO_SUBSCRIPTION);
+    }
   }
 }
