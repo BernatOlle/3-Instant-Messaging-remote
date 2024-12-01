@@ -25,32 +25,44 @@ public class TopicManagerStub implements TopicManager {
 
   @Override
   public Publisher addPublisherToTopic(Topic topic) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    apiREST_TopicManager.addPublisherToTopic(topic);
+    return new PublisherStub(topic);
   }
 
   @Override
   public void removePublisherFromTopic(Topic topic) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    apiREST_TopicManager.removePublisherFromTopic(topic);
   }
 
   @Override
   public Topic_check isTopic(Topic topic) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    return apiREST_TopicManager.isTopic(topic);
   }
 
   @Override
   public List<Topic> topics() {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    return apiREST_TopicManager.topics();
   }
 
   @Override
   public Subscription_check subscribe(Topic topic, Subscriber subscriber) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    try {
+      WebSocketClient.addSubscriber(topic, subscriber);  // Add subscriber via WebSocket
+      return new Subscription_check(topic, Subscription_check.Result.OKAY);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return new Subscription_check(topic, Subscription_check.Result.NO_TOPIC);
+    }
   }
 
   @Override
   public Subscription_check unsubscribe(Topic topic, Subscriber subscriber) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    try {
+      WebSocketClient.removeSubscriber(topic);  // Remove subscriber via WebSocket
+      return new Subscription_check(topic, Subscription_check.Result.OKAY);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return new Subscription_check(topic, Subscription_check.Result.NO_SUBSCRIPTION);
+    }
   }
-
 }
