@@ -1,0 +1,3 @@
+1. Make the publisher automaticaly a subscriber
+2. The messages that sends the publisher must not be repeted in its own message wall
+3. Create info message if the Server is not availabe and we click to a button. (As have been don in the subscribe)
