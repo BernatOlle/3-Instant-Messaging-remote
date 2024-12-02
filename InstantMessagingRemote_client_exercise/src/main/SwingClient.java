@@ -203,6 +203,8 @@ public void createAndShowGUI() {
             info_TextArea.append("Successfully subscribed to topic: " + topicName + "\n");
         } else if (result.result == Subscription_check.Result.NO_TOPIC) {
             info_TextArea.append("Error: Topic '" + topicName + "' does not exist.\n");
+        } else if (result.result == Subscription_check.Result.NO_SUBSCRIPTION){
+            info_TextArea.append("Server Error: Not able to complete Subscription.\n");
         }
       
     }
