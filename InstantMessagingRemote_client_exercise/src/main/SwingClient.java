@@ -181,8 +181,14 @@ public void createAndShowGUI() {
 
             // Create a publisher for the topic
             publisher = topicManager.addPublisherToTopic(publisherTopic);
-            publisher_TextArea.setText(publisherTopic.name);
-            info_TextArea.append("New publisher discussing about " + publisherTopic.name + "\n");            
+            
+            if (publisher != null){
+                publisher_TextArea.setText(publisherTopic.name);
+                info_TextArea.append("New publisher discussing about " + publisherTopic.name + "\n"); 
+            } else {
+                info_TextArea.append("An error have occurred while creating the publisher\n");
+            }
+           
         }
     }
 }

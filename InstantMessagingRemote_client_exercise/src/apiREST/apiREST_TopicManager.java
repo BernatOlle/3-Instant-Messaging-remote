@@ -10,7 +10,7 @@ import java.util.List;
 
 public class apiREST_TopicManager {
   
-  public static void addPublisherToTopic(Topic topic) {
+  public static boolean addPublisherToTopic(Topic topic) {
     try {
       URL url = new URL(Cons.SERVER_REST + "/topicmanager/addtopic");
       HttpURLConnection ucon = (HttpURLConnection) url.openConnection();
@@ -32,9 +32,12 @@ public class apiREST_TopicManager {
       while ((line = in.readLine()) != null) {
         System.out.println(line);
       }
-
+      
+      return true;
+      
     } catch (Exception e) {
       e.printStackTrace();
+      return false;
     }
   }
   public static void removePublisherFromTopic(Topic topic) {

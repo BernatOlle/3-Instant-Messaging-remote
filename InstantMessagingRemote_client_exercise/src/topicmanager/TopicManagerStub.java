@@ -25,8 +25,10 @@ public class TopicManagerStub implements TopicManager {
 
   @Override
   public Publisher addPublisherToTopic(Topic topic) {
-    apiREST_TopicManager.addPublisherToTopic(topic);
-    return new PublisherStub(topic);
+    if(apiREST_TopicManager.addPublisherToTopic(topic)){
+        return new PublisherStub(topic);
+    }
+    return null;
   }
 
   @Override
