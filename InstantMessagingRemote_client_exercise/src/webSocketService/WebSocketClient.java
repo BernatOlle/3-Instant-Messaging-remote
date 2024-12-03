@@ -85,7 +85,9 @@ public class WebSocketClient {
       if (subs_close != null && subs_close.cause != null) { 
         // Procesamos el cierre de la suscripción (sin métodos adicionales) 
         if (subs_close.cause == Subscription_close.Cause.PUBLISHER) { 
-          System.out.println("The publisher closed the subscription for topic: " + subs_close.topic.name); 
+            Message message = gson.fromJson(json, Message.class); 
+            Subscriber subscriber = subscriberMap.get(message.topic);
+            subscriber.onClose(subs_close);
         } else if (subs_close.cause == Subscription_close.Cause.SUBSCRIBER) { 
           System.out.println("The subscriber closed the subscription for topic: " + subs_close.topic.name); 
         } 

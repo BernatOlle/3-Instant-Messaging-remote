@@ -45,6 +45,7 @@ public class WebSocketServer {
         Subscriber subscriber = publisher.subscriber(session);
         if (subscriber != null) {
           global.getTopicManager().unsubscribe(s_req.topic, subscriber);
+          System.out.print("Remove");
         }
       }
     }

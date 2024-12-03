@@ -10,6 +10,7 @@ import java.util.Map;
 import publisher.Publisher;
 import publisher.PublisherImpl;
 import subscriber.Subscriber;
+import util.Message;
 
 public class TopicManagerImpl implements TopicManager {
 
@@ -35,7 +36,13 @@ public class TopicManagerImpl implements TopicManager {
   @Override
   public void removePublisherFromTopic(Topic topic) {
        if (topicMap.containsKey(topic)) {
-           topicMap.remove(topic);   
+           Publisher act_publisher = topicMap.get(topic);
+           
+           if (act_publisher.decPublishers() == 0){
+            act_publisher.detachAllSubscribers();
+            topicMap.remove(topic); 
+           }
+             
     }
   }
 
