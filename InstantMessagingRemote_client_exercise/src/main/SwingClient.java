@@ -194,15 +194,24 @@ public void createAndShowGUI() {
         Topic topic = new Topic(topicName);
         Subscriber subscriber = new SubscriberImpl(SwingClient.this);
         Subscription_check result = topicManager.subscribe(topic, subscriber);
+        System.out.print(my_subscriptions);
         if (result.result == Subscription_check.Result.OKAY) {
-            my_subscriptions.put(topic, subscriber); 
-            my_subscriptions_TextArea.setText("");
-            for (Topic t : my_subscriptions.keySet()) {
-                my_subscriptions_TextArea.append(t.name + "\n");
+            if (my_subscriptions.containsKey(topic)) {
+                info_TextArea.append("Already subcribed to topic: " + topicName + "\n");
+               
+            }else{
+                
+                 my_subscriptions.put(topic, subscriber); 
+                my_subscriptions_TextArea.setText("");
+                for (Topic t : my_subscriptions.keySet()) {
+                    my_subscriptions_TextArea.append(t.name + "\n");
+                }
+                info_TextArea.append("Successfully subscribed to topic: " + topicName + "\n");
             }
-            info_TextArea.append("Successfully subscribed to topic: " + topicName + "\n");
         } else if (result.result == Subscription_check.Result.NO_TOPIC) {
             info_TextArea.append("Error: Topic '" + topicName + "' does not exist.\n");
+        } else if (result.result == Subscription_check.Result.NO_SUBSCRIPTION){
+            info_TextArea.append("Server Error: Not able to complete Subscription.\n");
         }
       
     }
