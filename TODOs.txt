@@ -1,0 +1,2 @@
+Manage what happens when a Publisher of topic X, change the to topic Y.
+Now should the topic X be deleted if doesn't have any publisher?
