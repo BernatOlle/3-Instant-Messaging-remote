@@ -13,6 +13,7 @@ import java.util.Map;
 import publisher.Publisher;
 import subscriber.Subscriber;
 import topicmanager.TopicManager;
+import util.Subscription_close;
 import util.Topic_check;
 
 public class SwingClient {
@@ -233,7 +234,8 @@ public void createAndShowGUI() {
 
         if (result.result == Subscription_check.Result.OKAY) {
             my_subscriptions.remove(topic); 
-            
+            Subscription_close subs_close = new Subscription_close(topic,Subscription_close.Cause.SUBSCRIBER);
+            subscriber.onClose(subs_close);
             my_subscriptions_TextArea.setText("");
             for (Topic t : my_subscriptions.keySet()) {
                 my_subscriptions_TextArea.append(t.name + "\n");
@@ -299,6 +301,13 @@ public void createAndShowGUI() {
   class CloseAppHandler implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
+        
+      for (Topic t : my_subscriptions.keySet()) {
+                Subscriber subscriber = my_subscriptions.get(t);
+                topicManager.unsubscribe(t, subscriber);
+                
+            }
+      topicManager.removePublisherFromTopic(publisherTopic);
       System.out.println("all users closed");
       System.exit(0);
     }

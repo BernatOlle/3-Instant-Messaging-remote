@@ -42,17 +42,22 @@ public class PublisherImpl implements Publisher {
 
   @Override
   public boolean detachSubscriber(Subscriber subscriber) {
+      subscriber.onClose(new Subscription_close(this.topic,Subscription_close.Cause.SUBSCRIBER));
     return subscriberSet.remove(subscriber);
   }
 
   @Override
   public void detachAllSubscribers() {
+      for (Subscriber subscriber : subscriberSet) {
+        subscriber.onClose(new Subscription_close(this.topic,Subscription_close.Cause.PUBLISHER));
+    }
     subscriberSet.clear();
   }
 
   @Override
   public void publish(Message message) {
     for (Subscriber subscriber : subscriberSet) {
+        System.out.print(message);
         subscriber.onMessage(message);
     }
   }

@@ -31,10 +31,7 @@ public class SubscriberImpl implements Subscriber {
     if (subs_close.cause == Subscription_close.Cause.PUBLISHER) {
       messages_TextArea.append("Topic: " + subs_close.topic.name
         + " has been closed, no publishers left on that topic.\n");
-    } else if (subs_close.cause == Subscription_close.Cause.SUBSCRIBER) {
-      messages_TextArea.append("subscription on topic: " + subs_close.topic.name
-        + " has ended.\n");
-    }
+    } 
     my_subscriptions.remove(subs_close.topic);
     my_subscriptions_TextArea.setText("");
     for (Topic topic : my_subscriptions.keySet()) {
