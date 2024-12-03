@@ -45,10 +45,10 @@ public class TopicManagerStub implements TopicManager {
   }
 
 @Override
-public Subscription_check subscribe(Topic topic, Subscriber subscriber) {
+public Subscription_check subscribe(Topic topic, Subscriber subscriber) { //No utilitzar no_subsciption
     try {
         // Check if the topic exists first (assuming you have a method to validate topic existence)
-        Topic_check topicCheck = apiREST_TopicManager.isTopic(topic);
+        Topic_check topicCheck = this.isTopic(topic);
         
         if (topicCheck == null){
             // If the topicCheck is null, we are facing a Server Fail, and no subscription is possible
