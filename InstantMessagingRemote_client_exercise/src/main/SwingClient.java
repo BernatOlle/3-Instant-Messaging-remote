@@ -178,6 +178,7 @@ public void createAndShowGUI() {
         if (publisherTopic != null && topicName.equals(publisherTopic.name)){
             info_TextArea.append("You are already publisher of: " + publisherTopic.name + "\n");      
         } else{
+            topicManager.removePublisherFromTopic(publisherTopic);
             publisherTopic = new Topic(topicName);
 
             // Create a publisher for the topic
