@@ -304,7 +304,7 @@ public void createAndShowGUI() {
         
       for (Topic t : my_subscriptions.keySet()) {
                 Subscriber subscriber = my_subscriptions.get(t);
-                subscriber.onClose(new Subscription_close(t,Subscription_close.Cause.SUBSCRIBER));
+                topicManager.unsubscribe(t, subscriber);
                 
             }
       topicManager.removePublisherFromTopic(publisherTopic);
