@@ -20,7 +20,7 @@ public class SwingClient {
 
   TopicManager topicManager;
   public Map<Topic, Subscriber> my_subscriptions;
-  Publisher publisher;
+  public Map<Topic, Publisher> my_publishers; // Store publishers for multiple topics
   Topic publisherTopic;                // Currently selected topic for publishing
 
   JFrame frame;
@@ -28,13 +28,13 @@ public class SwingClient {
   public JTextArea messages_TextArea;
   public JTextArea info_TextArea;
   public JTextArea my_subscriptions_TextArea;
-  JTextArea publisher_TextArea;
+  JComboBox<Topic> publisherComboBox;        // Dropdown to select active topic
   JTextField argument_TextField;
 
   public SwingClient(TopicManager topicManager) {
     this.topicManager = topicManager;
     my_subscriptions = new HashMap<Topic, Subscriber>();
-    publisher = null;
+    my_publishers = new HashMap<Topic, Publisher>();
     publisherTopic = null;
   }
 
@@ -47,7 +47,7 @@ public void createAndShowGUI() {
 
     topic_list_TextArea = new JTextArea(5, 10);
     my_subscriptions_TextArea = new JTextArea(5, 10);
-    publisher_TextArea = new JTextArea(1, 10);
+    publisherComboBox = new JComboBox<Topic>();
     argument_TextField = new JTextField(20);
 
     // Separate TextAreas for Messages and Information
@@ -92,6 +92,17 @@ public void createAndShowGUI() {
             messages_TextArea.setText("");
         }
     });
+    
+    publisherComboBox = new JComboBox<Topic>();
+    publisherComboBox.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            publisherTopic = (Topic) publisherComboBox.getSelectedItem();
+            if (topicManager != null) {
+                info_TextArea.append("Switched to publishing on topic: " + publisherTopic.name + "\n");
+            }
+        }
+    });
 
     JPanel buttonsPannel = new JPanel(new FlowLayout());
     buttonsPannel.add(show_topics_button);
@@ -113,7 +124,7 @@ public void createAndShowGUI() {
     topicsP.add(new JLabel("My Subscriptions:"));
     topicsP.add(new JScrollPane(my_subscriptions_TextArea));
     topicsP.add(new JLabel("I'm Publisher of topics:"));
-    topicsP.add(publisher_TextArea);
+    topicsP.add(publisherComboBox);
     
     // Information Panel
     JPanel infoPanel = new JPanel();
@@ -170,21 +181,41 @@ public void createAndShowGUI() {
     public void actionPerformed(ActionEvent e) {
         String topicName = argument_TextField.getText().trim();
 
-        if (topicName.isEmpty()) {
+         if (topicName.isEmpty()) {
             info_TextArea.append("Error: Topic name cannot be empty.\n");
             return;
         }
 
-        if (publisherTopic != null && topicName.equals(publisherTopic.name)){
-            info_TextArea.append("You are already publisher of: " + publisherTopic.name + "\n");      
-        } else{
-            topicManager.removePublisherFromTopic(publisherTopic);
-            publisherTopic = new Topic(topicName);
+        Topic selectedTopic = new Topic(topicName);
+        
+        Publisher newPublisher = topicManager.addPublisherToTopic(selectedTopic);
+        if (newPublisher != null) {
+            my_publishers.put(selectedTopic, newPublisher);         
+            
+            DefaultComboBoxModel<Topic> model = (DefaultComboBoxModel<Topic>) publisherComboBox.getModel();
+            boolean topicExists = false;
 
-            // Create a publisher for the topic
-            publisher = topicManager.addPublisherToTopic(publisherTopic);
-            publisher_TextArea.setText(publisherTopic.name);
-            info_TextArea.append("New publisher discussing about " + publisherTopic.name + "\n");            
+            // Iterate through the ComboBox items to check if the topic is already there
+            for (int i = 0; i < model.getSize(); i++) {
+                if (model.getElementAt(i).equals(selectedTopic)) {
+                    topicExists = true;
+                    break;
+                }
+            }
+
+            // Add the topic only if it doesn't already exist
+            if (!topicExists) {
+                publisherComboBox.addItem(selectedTopic);
+            }
+            
+            publisherTopic = selectedTopic;
+
+            // Treat the publisher as a subscriber to receive messages
+            // topicManager.subscribe(selectedTopic, (Subscriber) newPublisher);
+
+            info_TextArea.append("You are now a publisher for topic: " + topicName + "\n");
+        } else {
+            info_TextArea.append("Error: Failed to assign you as a publisher for topic: " + topicName + "\n");
         }
     }
 }
@@ -258,6 +289,7 @@ public void createAndShowGUI() {
             return;
         }
 
+        Publisher publisher = my_publishers.get(publisherTopic);
         if (publisher == null) {
             info_TextArea.append("Error: No publisher found for the selected topic.\n");
             return;
@@ -285,6 +317,7 @@ public void createAndShowGUI() {
             return;
         }
 
+        Publisher publisher = my_publishers.get(publisherTopic);
         if (publisher == null) {
             info_TextArea.append("Error: No publisher found for the selected topic.\n");
             return;
