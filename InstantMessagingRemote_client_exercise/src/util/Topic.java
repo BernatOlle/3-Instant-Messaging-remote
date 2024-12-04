@@ -19,6 +19,10 @@ public class Topic {
     return hash;
   }
   
+  public String toString() {
+        return name; // Devuelve el nombre del topic
+    }
+  
   @Override
   public boolean equals(Object object) {
     
