@@ -188,6 +188,7 @@ public void createAndShowGUI() {
 
         Topic selectedTopic = new Topic(topicName);
         
+        
         Publisher newPublisher = topicManager.addPublisherToTopic(selectedTopic);
         if (newPublisher != null) {
             my_publishers.put(selectedTopic, newPublisher);         
