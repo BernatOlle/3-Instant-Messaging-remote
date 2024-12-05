@@ -23,32 +23,43 @@ public class PublisherImpl implements Publisher {
 
   @Override
   public void incPublishers() {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    numPublishers++;
   }
 
   @Override
   public int decPublishers() {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-  }
+    if (numPublishers > 0) {
+        numPublishers--;
+    }
+    return numPublishers;  }
 
   @Override
   public void attachSubscriber(Subscriber subscriber) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    if (!subscriberSet.contains(subscriber)) {
+        subscriberSet.add(subscriber);
+    }  
   }
 
   @Override
   public boolean detachSubscriber(Subscriber subscriber) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      subscriber.onClose(new Subscription_close(this.topic,Subscription_close.Cause.SUBSCRIBER));
+    return subscriberSet.remove(subscriber);
   }
 
   @Override
   public void detachAllSubscribers() {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      for (Subscriber subscriber : subscriberSet) {
+        subscriber.onClose(new Subscription_close(this.topic,Subscription_close.Cause.PUBLISHER));
+    }
+    subscriberSet.clear();
   }
 
   @Override
   public void publish(Message message) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    for (Subscriber subscriber : subscriberSet) {
+        System.out.print(message);
+        subscriber.onMessage(message);
+    }
   }
   
   public Subscriber subscriber(Session session) {

@@ -10,7 +10,7 @@ import subscriber.Subscriber;
 public interface TopicManager {
 
   Publisher     addPublisherToTopic(Topic topic);
-  void          removePublisherFromTopic(Topic topic);
+  boolean       removePublisherFromTopic(Topic topic);
   Topic_check   isTopic(Topic topic);
   List<Topic>   topics();
   

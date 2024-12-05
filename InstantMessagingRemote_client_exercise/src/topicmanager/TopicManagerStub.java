@@ -25,32 +25,64 @@ public class TopicManagerStub implements TopicManager {
 
   @Override
   public Publisher addPublisherToTopic(Topic topic) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    if(apiREST_TopicManager.addPublisherToTopic(topic)){
+        return new PublisherStub(topic);
+    }
+    return null;
   }
 
   @Override
-  public void removePublisherFromTopic(Topic topic) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  public boolean removePublisherFromTopic(Topic topic) {
+    return apiREST_TopicManager.removePublisherFromTopic(topic);
   }
 
   @Override
   public Topic_check isTopic(Topic topic) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    return apiREST_TopicManager.isTopic(topic);
   }
 
   @Override
   public List<Topic> topics() {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    return apiREST_TopicManager.topics();
   }
 
-  @Override
-  public Subscription_check subscribe(Topic topic, Subscriber subscriber) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-  }
+@Override
+public Subscription_check subscribe(Topic topic, Subscriber subscriber) { //No utilitzar no_subsciption
+    try {
+        // Check if the topic exists first (assuming you have a method to validate topic existence)
+        Topic_check topicCheck = this.isTopic(topic);
+        
+        if (topicCheck.isOpen){
+            // If the topic exists, add the subscriber via WebSocket
+            WebSocketClient.addSubscriber(topic, subscriber);
+            return new Subscription_check(topic, Subscription_check.Result.OKAY);
+           
+        }else{
+            return new Subscription_check(topic, Subscription_check.Result.NO_TOPIC);
+        
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+        return new Subscription_check(topic, Subscription_check.Result.NO_TOPIC);
+    }
+}
 
   @Override
   public Subscription_check unsubscribe(Topic topic, Subscriber subscriber) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    try {
+        Topic_check topicCheck = this.isTopic(topic);
+        if (topicCheck.isOpen){
+            // If the topic exists, add the subscriber via WebSocket
+            WebSocketClient.removeSubscriber(topic);  // Remove subscriber via WebSocket
+            return new Subscription_check(topic, Subscription_check.Result.OKAY);
+           
+        }else{
+            return new Subscription_check(topic, Subscription_check.Result.NO_SUBSCRIPTION);
+        
+        }
+    } catch (Exception e) {
+      e.printStackTrace();
+      return new Subscription_check(topic, Subscription_check.Result.NO_SUBSCRIPTION);
+    }
   }
-
 }
