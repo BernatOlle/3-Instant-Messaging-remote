@@ -39,7 +39,7 @@ public class apiREST_TopicManager {
       return false;
     }
   }
-  public static void removePublisherFromTopic(Topic topic) {
+  public static boolean removePublisherFromTopic(Topic topic) {
     try {
       URL url = new URL(Cons.SERVER_REST + "/topicmanager/removetopic");
       HttpURLConnection ucon = (HttpURLConnection) url.openConnection();
@@ -62,9 +62,11 @@ public class apiREST_TopicManager {
       while ((line = in.readLine()) != null) {
         System.out.println(line);
       }
-
+      return true;
+      
     } catch (Exception e) {
       e.printStackTrace();
+      return false;
     }
   }
   public static Topic_check isTopic(Topic topic) {

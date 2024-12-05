@@ -71,6 +71,7 @@ public void createAndShowGUI() {
     JButton to_close_the_app = new JButton("Close App");
     JButton clear_info_button = new JButton("Clear Info"); // Clear Information
     JButton clear_messages_button = new JButton("Clear Messages"); // Clear Messages
+    JButton delete_publisher_button = new JButton("Delete Publisher");
 
     show_topics_button.addActionListener(new showTopicsHandler());
     new_publisher_button.addActionListener(new newPublisherHandler());
@@ -79,6 +80,7 @@ public void createAndShowGUI() {
     to_post_an_event_button.addActionListener(new postEventHandler());
     forward_message_button.addActionListener(new ForwardMessageHandler());
     to_close_the_app.addActionListener(new CloseAppHandler());
+    delete_publisher_button.addActionListener(new DeletePublisherHandler());
 
     clear_info_button.addActionListener(new ActionListener() {
         @Override
@@ -123,6 +125,7 @@ public void createAndShowGUI() {
     topicsP.add(new JScrollPane(my_subscriptions_TextArea));
     topicsP.add(new JLabel("I'm Publisher of topics:"));
     topicsP.add(publisherComboBox);
+    topicsP.add(delete_publisher_button); // Add the Delete button here
     
     // Information Panel
     JPanel infoPanel = new JPanel();
@@ -348,6 +351,34 @@ public void createAndShowGUI() {
     }
     }
 
+  class DeletePublisherHandler implements ActionListener {
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        // Ensure a topic is selected
+        if (publisherTopic == null) {
+            info_TextArea.append("Error: No topic selected for deletion.\n");
+            return;
+        }
+
+        // Remove the publisher for the selected topic
+        Publisher publisher = my_publishers.get(publisherTopic);
+        if (publisher != null) {
+            boolean result = topicManager.removePublisherFromTopic(publisherTopic);
+            if (result) {
+                // Remove the topic from the publisher list and the combo box
+                my_publishers.remove(publisherTopic);
+                info_TextArea.append("You are no longer a publisher for topic: " + publisherTopic.name + "\n");
+                publisherComboBox.removeItem(publisherTopic);
+                publisherTopic = null; // Clear the current topic
+            } else {
+                info_TextArea.append("Error: Failed to remove publisher from topic: " + publisherTopic.name + "\n");
+            }
+        } else {
+            info_TextArea.append("Error: No publisher found for the selected topic.\n");
+        }
+    }
+}
 
   class CloseAppHandler implements ActionListener {
 

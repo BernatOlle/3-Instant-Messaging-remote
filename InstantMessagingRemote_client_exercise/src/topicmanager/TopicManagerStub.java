@@ -32,8 +32,8 @@ public class TopicManagerStub implements TopicManager {
   }
 
   @Override
-  public void removePublisherFromTopic(Topic topic) {
-    apiREST_TopicManager.removePublisherFromTopic(topic);
+  public boolean removePublisherFromTopic(Topic topic) {
+    return apiREST_TopicManager.removePublisherFromTopic(topic);
   }
 
   @Override
