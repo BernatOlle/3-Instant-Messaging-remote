@@ -7,7 +7,7 @@ import java.net.*;
 
 public class apiREST_Publisher {
   
-  public static void publish(Message message) {
+  public static boolean publish(Message message) {
     try {
       URL url = new URL(Cons.SERVER_REST + "/publisher/publish");
       HttpURLConnection ucon = (HttpURLConnection) url.openConnection();
@@ -30,9 +30,10 @@ public class apiREST_Publisher {
       while ((line = in.readLine()) != null) {
         System.out.println(line);
       }
-
+      return true;
     } catch (Exception e) {
       e.printStackTrace();
+      return false;
     }
   }
 }

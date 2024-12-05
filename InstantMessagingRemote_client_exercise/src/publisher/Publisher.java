@@ -4,5 +4,5 @@ import util.Message;
 
 public interface Publisher {
   
-    public void publish(Message message);
+    public boolean publish(Message message);
 }
