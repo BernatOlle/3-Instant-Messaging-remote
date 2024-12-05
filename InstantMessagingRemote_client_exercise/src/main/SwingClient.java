@@ -1,5 +1,6 @@
 package main;
 
+import apiREST.apiREST_TopicManager;
 import util.Message;
 import util.Subscription_check;
 import util.Topic;
@@ -98,9 +99,6 @@ public void createAndShowGUI() {
         @Override
         public void actionPerformed(ActionEvent e) {
             publisherTopic = (Topic) publisherComboBox.getSelectedItem();
-            if (topicManager != null) {
-                info_TextArea.append("Switched to publishing on topic: " + publisherTopic.name + "\n");
-            }
         }
     });
 
@@ -185,42 +183,48 @@ public void createAndShowGUI() {
     public void actionPerformed(ActionEvent e) {
         String topicName = argument_TextField.getText().trim();
 
-         if (topicName.isEmpty()) {
+        // Check for empty topic name
+        if (topicName.isEmpty()) {
             info_TextArea.append("Error: Topic name cannot be empty.\n");
             return;
         }
 
         Topic selectedTopic = new Topic(topicName);
-        
-        
-        Publisher newPublisher = topicManager.addPublisherToTopic(selectedTopic);
-        if (newPublisher != null) {
-            my_publishers.put(selectedTopic, newPublisher);         
-            
-            DefaultComboBoxModel<Topic> model = (DefaultComboBoxModel<Topic>) publisherComboBox.getModel();
-            boolean topicExists = false;
 
-            // Iterate through the ComboBox items to check if the topic is already there
-            for (int i = 0; i < model.getSize(); i++) {
-                if (model.getElementAt(i).equals(selectedTopic)) {
-                    topicExists = true;
-                    break;
-                }
+        // Check if the topic exists using the API
+        Topic_check topicCheck = apiREST_TopicManager.isTopic(selectedTopic);
+
+        if (topicCheck.isOpen) {
+            // If the topic exists, check if the user is already a publisher
+            if (my_publishers.containsKey(selectedTopic)) {
+                info_TextArea.append("You are already a publisher for topic: " + topicName + "\n");
+                publisherComboBox.setSelectedItem(selectedTopic);
+                return;
             }
 
-            // Add the topic only if it doesn't already exist
-            if (!topicExists) {
+            // Add the user as a publisher to the existing topic
+            Publisher newPublisher = topicManager.addPublisherToTopic(selectedTopic);
+            if (newPublisher != null) {
                 publisherComboBox.addItem(selectedTopic);
+                my_publishers.put(selectedTopic, newPublisher);
+                publisherTopic = selectedTopic;
+                info_TextArea.append("You are now a publisher for the existing topic: " + topicName + "\n");
+                publisherComboBox.setSelectedItem(selectedTopic);
+            } else {
+                info_TextArea.append("Error: Failed to assign you as a publisher for the topic: " + topicName + "\n");
             }
-            
-            publisherTopic = selectedTopic;
-
-            // Treat the publisher as a subscriber to receive messages
-            // topicManager.subscribe(selectedTopic, (Subscriber) newPublisher);
-
-            info_TextArea.append("You are now a publisher for topic: " + topicName + "\n");
         } else {
-            info_TextArea.append("Error: Failed to assign you as a publisher for topic: " + topicName + "\n");
+            // If the topic does not exist, create it and assign the user as its publisher
+            Publisher newPublisher = topicManager.addPublisherToTopic(selectedTopic);
+            if (newPublisher != null) {
+                publisherComboBox.addItem(selectedTopic);
+                my_publishers.put(selectedTopic, newPublisher);
+                publisherTopic = selectedTopic;
+                info_TextArea.append("Topic '" + topicName + "' was created, and you are now its publisher.\n");
+                publisherComboBox.setSelectedItem(selectedTopic);
+            } else {
+                info_TextArea.append("Error: Failed to create and assign you as a publisher for the topic: " + topicName + "\n");
+            }
         }
     }
 }
