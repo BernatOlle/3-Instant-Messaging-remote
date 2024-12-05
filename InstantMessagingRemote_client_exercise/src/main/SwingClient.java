@@ -364,17 +364,16 @@ public void createAndShowGUI() {
         // Remove the publisher for the selected topic
         Publisher publisher = my_publishers.get(publisherTopic);
         if (publisher != null) {
-            //TODO: removePublisherFromTopic must retun a bool: boolean result = 
-            topicManager.removePublisherFromTopic(publisherTopic);
-            //if (result) {
+            boolean result = topicManager.removePublisherFromTopic(publisherTopic);
+            if (result) {
                 // Remove the topic from the publisher list and the combo box
                 my_publishers.remove(publisherTopic);
                 info_TextArea.append("You are no longer a publisher for topic: " + publisherTopic.name + "\n");
                 publisherComboBox.removeItem(publisherTopic);
                 publisherTopic = null; // Clear the current topic
-            //} else {
-            //    info_TextArea.append("Error: Failed to remove publisher from topic: " + publisherTopic.name + "\n");
-            //}
+            } else {
+                info_TextArea.append("Error: Failed to remove publisher from topic: " + publisherTopic.name + "\n");
+            }
         } else {
             info_TextArea.append("Error: No publisher found for the selected topic.\n");
         }
