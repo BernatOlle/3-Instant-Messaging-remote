@@ -16,7 +16,7 @@ public class PublisherStub implements Publisher {
   }
 
   @Override
-  public void publish(Message message) {
+  public boolean publish(Message message) {
     try {
       // Ensure the message has the correct topic
       if (!topic.equals(message.topic)) {
@@ -24,12 +24,16 @@ public class PublisherStub implements Publisher {
       }
 
       // Use the API client to publish the message to the REST service
-      restPublisherAPI.publish(message);
+      if(!restPublisherAPI.publish(message)){
+          return false;
+      }
 
       System.out.println("Message published to topic: " + topic.name);
+      return true;
     } catch (Exception e) {
       System.err.println("Failed to publish message: " + e.getMessage());
       e.printStackTrace();
+      return false;
     }
   }
 }

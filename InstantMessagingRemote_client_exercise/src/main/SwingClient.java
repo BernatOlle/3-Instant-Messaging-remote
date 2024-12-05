@@ -160,7 +160,11 @@ public void createAndShowGUI() {
     public void actionPerformed(ActionEvent e) {
         // Obtén la lista de tópicos (sin el cast)
         List<Topic> topicsList = topicManager.topics();  
-
+        
+        if (topicsList == null){
+            topic_list_TextArea.append("No topics available.\n");
+        }
+        
         // Ahora puedes trabajar con 'topicsList' como una lista
         for (Topic topic : topicsList) {
             System.out.println(topic);
@@ -298,9 +302,13 @@ public void createAndShowGUI() {
 
         String content = argument_TextField.getText();
         Message message = new Message(publisherTopic, content);
-        publisher.publish(message);
+        
+        if(publisher.publish(message)){
+            messages_TextArea.append("Message posted to topic '" + publisherTopic.name + "': " + content + "\n");
+        } else{
+            info_TextArea.append("Error while trying to post.\n");
+        }
 
-        messages_TextArea.append("Message posted to topic '" + publisherTopic.name + "': " + content + "\n");
     }
   }
   
@@ -326,9 +334,13 @@ public void createAndShowGUI() {
 
         // Create a message and publish it
         Message message = new Message(publisherTopic, selectedMessage);
-        publisher.publish(message);
+        
+        if(publisher.publish(message)){
+            messages_TextArea.append("Message forwarded to topic '" + publisherTopic.name + "': " + selectedMessage + "\n");
+        } else {
+            info_TextArea.append("Error while trying to forward.\n");
+        }
 
-        messages_TextArea.append("Message forwarded to topic '" + publisherTopic.name + "': " + selectedMessage + "\n");
     }
     }
 
